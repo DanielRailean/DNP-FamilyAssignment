@@ -1,0 +1,49 @@
+@page "/Profile"
+@using WebApplication.Data
+@using WebApplication.Models
+
+
+
+
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager NavigationManager;
+@inject IUserService UserService;
+
+<AuthorizeView>
+    <NotAuthorized>
+        <p>Please <a class="btn-primary" href="/login">Login</a> to view this page</p>
+    </NotAuthorized>
+    <Authorized>
+        <p>Hello @saveUser(@context.User.Identity.Name)</p>
+        <button class="btn-primary" @onclick="@Logout"> Logout</button>
+    </Authorized>
+</AuthorizeView>
+<div style="color:red">@errorMessage</div>
+
+
+@code {
+    private string errorMessage;
+    private string userName;
+    User u = null;
+
+    private async Task Logout()
+    {
+        errorMessage = "";
+        try
+        {
+            ((CustomAuthenticationStateProvider) AuthenticationStateProvider).Logout();
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private string saveUser(string username)
+    {
+        userName = username;
+        return userName;
+    }
+
+}

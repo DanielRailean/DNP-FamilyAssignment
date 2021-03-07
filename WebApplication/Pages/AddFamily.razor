@@ -1,0 +1,66 @@
+@page "/AddFamily"
+@using global::Models
+@using WebApplication.Data
+@inject IUserService UserService;
+@inject IFamilyService FamilyService;
+@inject NavigationManager NavigationManager;
+
+
+<AuthorizeView>
+    <NotAuthorized>
+                <p>Please <a class="btn-primary" href="/login">Login</a> to view this page</p>
+
+    </NotAuthorized>
+    <Authorized Context="Auth">
+        @* <h3>Add New Family @(() =>saveUser(@context.User.Identity.Name))</h3>        *@
+        <p style="display: none">Hello @saveUser(@Auth.User.Identity.Name)</p>
+        <EditForm Model="@newFamily" OnValidSubmit="@AddNewFamily" Context="Family">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <ValidationSummary></ValidationSummary>
+            <div class="form-group"> Street name <br/>
+                <InputText @bind-Value="newFamily.StreetName"></InputText>
+            </div>
+            <div class="form-group"> House number: <br/>
+                <InputNumber rows="4" @bind-Value="newFamily.HouseNumber"></InputNumber>
+            </div>
+            <p class="actions">
+                <button class="btn btn-outline-dark" type="submit"> Add family</button>
+            </p>
+        </EditForm>
+    </Authorized>
+</AuthorizeView>
+
+<div style="color:red">@errorMessage</div>
+@code {
+    private string userName;
+    private int userID;
+    private string errorMessage;
+    private Family newFamily = new Family();
+
+    private void getData()
+    {
+        
+    }
+    private string saveUser(string username)
+    {
+        userName = username;
+        userID = UserService.getUserID(userName);
+            getData();
+        return userName;
+    }
+
+    private void AddNewFamily()
+    {
+        errorMessage = "";
+        newFamily.UserId = userID;
+        try
+        {
+            FamilyService.AddFamily(newFamily);
+            NavigationManager.NavigateTo("/families");
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+}

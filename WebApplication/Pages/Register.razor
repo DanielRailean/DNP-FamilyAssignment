@@ -1,0 +1,45 @@
+@page "/Register"
+@using WebApplication.Data
+@using WebApplication.Models
+
+@inject IUserService UserService;
+@inject NavigationManager NavigationManager;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+
+<h3>On this page you can Register</h3>
+<EditForm Model="@NewUser" OnValidSubmit="@AddNewUser">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+    <div class="form-group"> Username: <br/>
+        <InputText  @bind-Value="NewUser.UserName"></InputText>
+    </div>
+    <div class="form-group"> Password: <br/>
+        <InputText  @bind-Value="NewUser.Password"></InputText>
+    </div>
+    <p class="actions">
+        <button class="btn btn-outline-dark" type="submit"> Register</button>
+    </p>
+</EditForm>
+<div style="color:red">@errorMessage</div>
+
+
+@code {
+    private string errorMessage;
+    private User NewUser = new User();
+
+    private void AddNewUser()
+    {
+        errorMessage = "";
+        try
+        {
+            UserService.RegisterUser(NewUser);
+            ((CustomAuthenticationStateProvider) AuthenticationStateProvider).ValidateLogin(NewUser.UserName,NewUser.Password);
+            NavigationManager.NavigateTo("Profile");
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+        
+    }
+}

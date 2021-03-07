@@ -1,0 +1,202 @@
+@page "/Families"
+@using WebApplication.Data
+@using System.Text.Json
+@using System.Collections
+@using global::Models
+
+@inject IUserService UserService;
+@inject IFamilyService FamilyService;
+@inject NavigationManager NavigationManager;
+
+<AuthorizeView>
+    <NotAuthorized>
+        <p>Please <a class="btn-primary" href="/login">Login</a> to view this page</p>
+    </NotAuthorized>
+    <Authorized>
+        <p style="display: none">Hello @saveUser(@context.User.Identity.Name)</p>
+        <h1>
+            Your families:
+            <button @onclick="@(() => NavigationManager.NavigateTo("addFamily"))">
+                <i class="oi oi-plus"></i>
+            </button>
+            
+        </h1>
+        @foreach (Family f in userFamilies)
+        {
+            <h2>
+                Family nr : @(++familyNr)
+                <button @onclick="@(() => deleteFamily(f.Id))">
+                    <i class="oi oi-trash"></i>
+                </button>
+                <button @onclick="@(() => NavigationManager.NavigateTo("/editFamily/"+f.Id))">
+                                    <i class="oi oi-pencil"></i>
+                                </button>
+            </h2>
+            <div style="padding: 25px;
+border-radius: 25px; border:  2px solid black; margin: 10px 0;">
+                <p>Adress: @f.StreetName @f.HouseNumber</p>
+                <h3>Adults:</h3>
+                @if (f.Adults != null && f.Adults.Count > 0)
+                {
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Name</th><th>Hair Color</th><th>Eye color</th><th>Age</th><th>Height</th><th>Weight</th><th>Job&Salary</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (Adult a in f.Adults)
+                        {
+                            <tr>
+                                <td>@a.FirstName @a.LastName</td>
+                                <td>@a.HairColor</td>
+                                <td>@a.EyeColor</td>
+                                <td>@a.Age</td>
+                                <td>@a.Height</td>
+                                <td>@a.Weight</td>
+                                <td>@a.JobTitle.JobTitle : @a.JobTitle.Salary $</td>
+                            </tr>
+                        }
+
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>none</p>
+                }
+                <h3>Children:</h3>
+                @if (f.Children != null && f.Children.Count > 0)
+                {
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Name</th><th>Hair Color</th><th>Eye color</th><th>Age</th><th>Height</th><th>Weight</th><th>Interest & Pets</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (Child a in f.Children)
+                        {
+                            <tr>
+                                <td>@a.FirstName @a.LastName</td>
+                                <td>@a.HairColor</td>
+                                <td>@a.EyeColor</td>
+                                <td>@a.Age</td>
+                                <td>@a.Height</td>
+                                <td>@a.Weight</td>
+                                @if (a.Interests.Count > 0)
+                                {
+                                    <td>
+                                        Interests :
+                                        <table class="table">
+                                            <thead>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            </thead>
+                                            <tbody>
+                                            @foreach (Interest i in @a.Interests)
+                                            {
+                                                <tr>
+                                                    <td>@i.Type</td>
+                                                    <td>@i.Description</td>
+                                                </tr>
+                                            }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                }
+                                @if (a.Pets.Count > 0)
+                                {
+                                    <td>
+                                        Pets :
+                                        <table class="table">
+                                            <thead>
+                                            <th>Name</th>
+                                            <th>Species</th>
+                                            <th>Age</th>
+                                            </thead>
+                                            <tbody>
+                                            @foreach (Pet p in @a.Pets)
+                                            {
+                                                <tr>
+                                                    <td>@p.Name</td>
+                                                    <td>@p.Species</td>
+                                                    <td>@p.Age years</td>
+                                                </tr>
+                                            }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                }
+
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>none</p>
+                }
+                <h3>Pets:</h3>
+                @if (f.Pets != null && f.Pets.Count > 0)
+                {
+                    <table class="table">
+                        <thead>
+                        <th>Name</th>
+                        <th>Species</th>
+                        <th>Age</th>
+                        </thead>
+                        @foreach (var p in f.Pets)
+                        {
+                            <tbody>
+                            <tr>
+                                <td>@p.Name</td>
+                                <td>@p.Species</td>
+                                <td>@p.Age years</td>
+                            </tr>
+                            </tbody>
+                        }
+                    </table>
+                }
+                else
+                {
+                    <p>none</p>
+                }
+            </div>
+        }
+
+    </Authorized>
+</AuthorizeView>
+<div style="color:red">@errorMessage</div>
+
+@code {
+    private string userName;
+    private int userId;
+    private string errorMessage;
+    private IList<Family> userFamilies;
+    private int familyNr = 0;
+
+    private void getData()
+    {
+        userId = UserService.getUserID(userName);
+        userFamilies = FamilyService.GetFamiliesOfUser(userId);
+    }
+
+    private string saveUser(string username)
+    {
+        userName = username;
+        getData();
+        return userName;
+    }
+
+    private void deleteFamily(int familyId)
+    {
+        FamilyService.RemoveFamily(familyId);
+        Family rm = userFamilies.First(f => f.Id == familyId);
+        userFamilies.Remove(rm);
+        familyNr = 0;
+    }
+
+
+}

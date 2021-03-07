@@ -1,0 +1,66 @@
+@page "/Login"
+@using WebApplication.Data
+@namespace WebApplication.Pages
+
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager NavigationManager;
+
+<AuthorizeView>
+    <NotAuthorized>
+        <p>On this page you can log In</p>
+        <div class="form-group">
+            <label> User name:</label>
+            <input type="text" placeholder="UserName" @bind-value="username">
+        </div>
+        <div class="form-group">
+            <label> Password: </label>
+            <input type="password" placeholder="Password" @bind-value="password">
+        </div>
+        <div style="color:red">@errorMessage</div>
+        <button @onclick="Login" class="btn-dark">LOGIN</button>
+    </NotAuthorized>
+    <Authorized>
+        <h3> Hello @context.User.Identity.Name !</h3>
+        <p>On this page you can log Out</p>
+        <button @onclick="Logout" class="btn-dark">LOGOUT</button>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+    private string username;
+    private string password;
+    private string errorMessage;
+
+    public async Task Login()
+    {
+        errorMessage = "";
+        try
+        {
+            ((CustomAuthenticationStateProvider) AuthenticationStateProvider).ValidateLogin(username, password);
+            username = "";
+            password = "";
+            NavigationManager.NavigateTo("/");
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    public async Task Logout()
+    {
+        errorMessage = "";
+        username = "";
+        password = "";
+        try
+        {
+            ((CustomAuthenticationStateProvider) AuthenticationStateProvider).Logout();
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+}

@@ -1,0 +1,187 @@
+@page "/SearchAdult"
+@using WebApplication.Data
+@using global::Models
+@using System.Collections
+
+@inject IUserService UserService;
+@inject IFamilyService FamilyService;
+@inject NavigationManager NavigationManager;
+
+<AuthorizeView>
+    <NotAuthorized>
+        <p>Please <a class="btn-primary" href="/login">Login</a> to view this page</p>
+    </NotAuthorized>
+    <Authorized>
+        <p>
+            Filter by name : <input type="text" @oninput="@((arg) => FilterByName(arg))" style="width:40px">
+        </p>
+        <p>Filter by hair color : <input type="text" @oninput="@((arg) => FilterByHair(arg))" style="width:40px">
+        </p>
+        <p>Filter by eye color : <input type="text" @oninput="@((arg) => FilterByEye(arg))" style="width:40px">
+        </p>
+        
+        <p style="display: none">Hello @saveUser(@context.User.Identity.Name)</p>
+        <h3>Adults:</h3>
+        @if (finalFilter != null && finalFilter.Count > 0)
+        {
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th><th>Hair Color</th><th>Eye color</th><th>Age</th><th>Height</th><th>Weight</th><th>Job&Salary</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (Adult a in finalFilter)
+                {
+                    <tr>
+                        <td>@a.FirstName  @a.LastName</td>
+                        <td>@a.HairColor</td>
+                        <td>@a.EyeColor</td>
+                        <td>@a.Age</td>
+                        <td>@a.Height</td>
+                        <td>@a.Weight</td>
+                        <td>@a.JobTitle.JobTitle : @a.JobTitle.Salary $</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>none</p>
+        }
+
+
+    </Authorized>
+</AuthorizeView>
+<div style="color:red">@errorMessage</div>
+
+@code {
+    private string userName;
+    private int userId;
+    private string errorMessage;
+    private IList<Family> userFamilies;
+    private IList<Adult> allAdults = new List<Adult>();
+    private IList<Adult> finalFilter;
+    private int familyNr = 0;
+    private string lastSearcehdName = "";
+    private string lastSearchedHair = "";
+    private string lastsearchEye = "";
+
+    private bool includeHair = true;
+    private bool includeName = true;
+    private bool includeEye = true;
+
+    private bool done;
+
+    private void getData()
+    {
+        userId = UserService.getUserID(userName);
+        userFamilies = FamilyService.GetFamiliesOfUser(userId);
+        LoadAdults();
+    }
+
+    private string saveUser(string username)
+    {
+        if (!done)
+        {
+            userName = username;
+            getData();
+            done = true;
+        }
+
+
+        return userName;
+    }
+
+    private void LoadAdults()
+    {
+        foreach (var f in userFamilies)
+        {
+            foreach (var a in f.Adults)
+            {
+                allAdults.Add(a);
+            }
+        }
+        finalFilter = allAdults;
+    }
+
+    private void FilterByName(ChangeEventArgs args)
+    {
+        try
+        {
+            lastSearcehdName = args.Value.ToString();
+            if (string.IsNullOrEmpty(lastSearcehdName))
+            {
+                lastSearcehdName = "";
+            }
+        }
+        catch (Exception)
+        {
+        }
+        ApplyFilter();
+
+    }
+
+    private void FilterByHair(ChangeEventArgs args)
+    {
+        try
+        {
+            lastSearchedHair = args.Value.ToString();
+            if (string.IsNullOrEmpty(lastSearchedHair))
+            {
+                lastSearchedHair = "";
+
+            }
+
+        }
+        catch (Exception)
+        {
+        }
+        ApplyFilter();
+
+
+    }
+
+    private void FilterByEye(ChangeEventArgs args)
+    {
+        try
+        {
+            lastsearchEye = args.Value.ToString();
+            if (string.IsNullOrEmpty(lastsearchEye))
+            {
+                lastsearchEye = "";
+            }
+        }
+        catch (Exception)
+        {
+        }
+        ApplyFilter();
+
+
+
+    }
+
+    private void ApplyFilter()
+    {
+        finalFilter = allAdults;
+
+            if (includeHair)
+            {
+                finalFilter = finalFilter.Where(a => a.FirstName.ToLower().Contains(lastSearcehdName.ToLower()) || a.LastName.ToLower().Contains(lastSearcehdName.ToLower())).ToList();
+            }
+            if (includeName)
+            {
+                finalFilter = finalFilter.Where(a => a.HairColor.ToLower().Contains(lastSearchedHair.ToLower())).ToList();
+
+            }
+
+            if (includeEye)
+            {
+                finalFilter = finalFilter.Where(a => a.EyeColor.ToLower().Contains(lastsearchEye.ToLower())).ToList();
+
+            }
+        
+    }
+
+}
