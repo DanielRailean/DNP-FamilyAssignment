@@ -5,8 +5,12 @@ namespace Models {
 public class Family {
     
     public int Id { get; set; }
+    [Required]
     public int UserId { get; set; }
+    [Required]
+    [StringLength(20, ErrorMessage = "Street name is too long.")]
     public string StreetName { get; set; }
+    [Required]
     public int HouseNumber{ get; set; }
     public List<Adult> Adults { get; set; }
     public List<Child> Children{ get; set; }

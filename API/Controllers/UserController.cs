@@ -19,7 +19,7 @@ namespace Controllers
         {
             this.userService = userService;
         }
-
+        
         [HttpPost]
         public async Task<ActionResult<User>> RegisterUser([FromBody] User user)
         {

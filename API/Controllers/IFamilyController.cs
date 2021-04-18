@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -6,9 +7,9 @@ namespace Controllers
 {
     public interface IFamilyController
     {
-        Task<ActionResult<User>> RegisterUser([FromBody] User user);
-        Task<ActionResult<User>> ValidateUser([FromQuery] string? username, [FromQuery] string? password);
-        Task<ActionResult<User>> UpdateUser([FromBody] User user);
-        Task<ActionResult<User>> RemoveUser([FromBody] int userId);
+        Task<ActionResult<IList<Family>>> GetFamiliesOfUser(int userId);
+        Task<ActionResult<Family>> AddFamily(Family family);
+        Task<ActionResult<Family>> RemoveFamily(int familyId);
+        Task<ActionResult<Family>> UpdateFamily(Family family);
     }
 }

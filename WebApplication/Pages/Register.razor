@@ -33,7 +33,7 @@
         try
         {
             await UserService.RegisterUser(NewUser);
-            // ((CustomAuthenticationStateProvider) AuthenticationStateProvider).ValidateLogin(NewUser.UserName,NewUser.Password);
+            ((CustomAuthenticationStateProvider) AuthenticationStateProvider).ValidateLogin(NewUser.UserName,NewUser.Password);
             NavigationManager.NavigateTo("Profile");
         }
         catch (Exception e)

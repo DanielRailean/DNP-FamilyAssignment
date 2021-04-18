@@ -8,8 +8,8 @@
 
 <AuthorizeView>
     <NotAuthorized>
-                <p>Please <a class="btn-primary" href="/login">Login</a> to view this page</p>
-
+        
+        <p>Please <a class="btn-primary" href="/login">Login</a> to view this page</p>
     </NotAuthorized>
     <Authorized Context="Auth">
         <EditForm Model="@newFamily" OnValidSubmit="@AddNewFamily" Context="Family">
@@ -43,7 +43,7 @@
         try
         {
             FamilyService.AddFamily(newFamily);
-            NavigationManager.NavigateTo("/families");
+            NavigationManager.NavigateTo("/families", forceLoad:true);
         }
         catch (Exception e)
         {

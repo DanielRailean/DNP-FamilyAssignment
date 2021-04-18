@@ -67,7 +67,7 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
             {
                 <p>none</p>
             }
-            <EditForm Model="@toAddAdult" Context="Family">
+            <EditForm Model="@toAddAdult" Context="Family" OnValidSubmit="AddAdult">
                 <DataAnnotationsValidator></DataAnnotationsValidator>
                 <ValidationSummary></ValidationSummary>
                 <div class="form-group">
@@ -96,7 +96,7 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
 
                         </tbody>
                     </table>
-                    <h5><button @onclick="@(() => AddAdult())">
+                    <h5><button type="submit">
                                                             Add new adult <i class="oi oi-file"></i>
                                                         </button></h5> 
                 </div>
@@ -232,7 +232,7 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
         {
             famId = int.Parse(familyId);
             userId = UserService.getCurrentUserID();
-            edited = FamilyService.GetFamiliesOfUser(userId).First(f => f.Id == famId);
+            edited = Task.Run(()=>FamilyService.GetFamiliesOfUser(userId)).Result.First(f => f.Id == famId);
         }
         catch (Exception)
         {

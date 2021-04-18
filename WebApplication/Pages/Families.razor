@@ -127,7 +127,7 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
                                         </table>
                                     </td>
                                 }
-
+nav
                             </tr>
                         }
                         </tbody>
@@ -178,8 +178,10 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
     protected override async Task OnInitializedAsync()
     {
         userId = UserService.getCurrentUserID();
-        userFamilies = FamilyService.GetFamiliesOfUser(userId);
+        userFamilies = Task.Run(()=>FamilyService.GetFamiliesOfUser(userId)).Result;
+        familyNr = 0;
     }
+    
 
 
     private void deleteFamily(int familyId)
@@ -188,6 +190,7 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
         Family rm = userFamilies.First(f => f.Id == familyId);
         userFamilies.Remove(rm);
         familyNr = 0;
+        // NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }
 
 }

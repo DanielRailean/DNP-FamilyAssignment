@@ -31,6 +31,7 @@ namespace API
         {
             services.AddControllers();
             services.AddScoped<IUserService, UserServiceJSON>();
+            services.AddScoped<IFamilyService, FamilyServiceJSON>();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "API", Version = "v1"}); });
         }
 

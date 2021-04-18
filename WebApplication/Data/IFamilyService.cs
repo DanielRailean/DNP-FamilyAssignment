@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Models;
 
 namespace Data
 {
     public interface IFamilyService
     {
-        IList<Family> GetFamiliesOfUser(int userId);
-        IList<Family> GetAllFamilies();
-        void AddFamily(Family family);
-        void RemoveFamily(int familyId);
-        void UpdateFamily(Family family);
+        Task<IList<Family>> GetFamiliesOfUser(int userId);
+        Task<IList<Family>> GetAllFamilies();
+        Task AddFamily(Family family);
+        Task RemoveFamily(int familyId);
+        Task UpdateFamily(Family family);
     }
 }

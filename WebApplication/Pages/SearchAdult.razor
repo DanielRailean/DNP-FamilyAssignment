@@ -59,7 +59,7 @@
     private string errorMessage;
     private IList<Family> userFamilies;
     private IList<Adult> allAdults = new List<Adult>();
-    private IList<Adult> finalFilter;
+    private IList<Adult> finalFilter = new List<Adult>();
     private int familyNr = 0;
     private string lastSearcehdName = "";
     private string lastSearchedHair = "";
@@ -71,15 +71,16 @@
 
     private bool done;
 
-    private void getData()
+    protected override async Task OnInitializedAsync()
     {
         userId = UserService.getCurrentUserID();
-        userFamilies = FamilyService.GetFamiliesOfUser(userId);
+        userFamilies = Task.Run(() => FamilyService.GetFamiliesOfUser(userId)).Result;
         LoadAdults();
     }
 
     private void LoadAdults()
     {
+        
         foreach (var f in userFamilies)
         {
             foreach (var a in f.Adults)

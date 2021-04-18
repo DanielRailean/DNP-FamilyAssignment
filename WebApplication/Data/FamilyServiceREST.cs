@@ -3,85 +3,87 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Models;
 
 namespace Data
 {
     public class FamilyServiceREST : IFamilyService
     {
-        private IList<Family> AlLFamilies;
-        private string familyFile = "families.json";
+        private HttpClient client;
+        private string uri = "https://localhost:3001/Family";
 
         public FamilyServiceREST()
         {
-            if (File.Exists(familyFile))
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
             {
-                string serialized = File.ReadAllText(familyFile);
-                AlLFamilies = JsonSerializer.Deserialize<IList<Family>>(serialized);
-            }
-            else
+                return true;
+            }; 
+            client = new HttpClient(clientHandler);
+        }
+
+        public async Task<IList<Family>> GetFamiliesOfUser(int userId)
+        {
+            HttpResponseMessage responseMessage = await client.GetAsync(uri + $"?userId={@userId}");
+            if (!responseMessage.IsSuccessStatusCode)
             {
-                AlLFamilies = new List<Family>();
+                throw new Exception($@"Error: {responseMessage.ReasonPhrase}");
             }
+
+            string result = await responseMessage.Content.ReadAsStringAsync();
+            IList<Family> gotFamilies = JsonSerializer.Deserialize<IList<Family>>(result, new JsonSerializerOptions{ PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
+            return gotFamilies;
         }
 
-        private void Save()
+        public Task<IList<Family>> GetAllFamilies()
         {
-            string familyDone = JsonSerializer.Serialize(AlLFamilies);
-            File.WriteAllText(familyFile,familyDone);   
+            throw new NotImplementedException();
         }
 
-        public IList<Family> GetFamiliesOfUser(int userId)
+        public async Task AddFamily(Family family)
         {
-            List<Family> tmp = new List<Family>();
-            foreach (var f in AlLFamilies)
+            string familyAsJson = JsonSerializer.Serialize(family);
+            HttpContent content = new StringContent(
+                familyAsJson,
+                Encoding.UTF8,
+                "application/json");
+            HttpResponseMessage response = await client.PostAsync(uri, content);
+            if (!response.IsSuccessStatusCode)
             {
-                if(f.UserId==userId) tmp.Add(f);
+                throw new Exception($@"Error: {response.ReasonPhrase}");
             }
-            return tmp;
+            // Console.WriteLine("post");
+
         }
 
-        public IList<Family> GetAllFamilies()
+        public async Task RemoveFamily(int familyId)
         {
-            List<Family> tmp = new List<Family>(AlLFamilies);
-            return tmp;
-        }
-
-        public void AddFamily(Family family)
-        {
-            string streetComb = family.StreetName + family.HouseNumber;
-            var temp = AlLFamilies.FirstOrDefault(f => (f.StreetName + f.HouseNumber).Equals(streetComb));
-            if (temp == null)
+            HttpResponseMessage response =
+                await client.DeleteAsync(uri + $"?familyId={@familyId}");
+            if (!response.IsSuccessStatusCode)
             {
-                int max = AlLFamilies.Max(f => f.Id);
-                family.Id = (++max);
-                AlLFamilies.Add(family);
-                Save();     
+                throw new Exception($@"Error: {response.ReasonPhrase}");
             }
-            else
+            // Console.WriteLine("delete");
+        }
+
+        public async Task UpdateFamily(Family family)
+        {
+            string familyAsJson = JsonSerializer.Serialize(family);
+            HttpContent content = new StringContent(
+                familyAsJson,
+                Encoding.UTF8,
+                "application/json");
+            HttpResponseMessage response = await client.PutAsync(uri, content);
+            if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("A family already lives on this street, in that house.");
+                throw new Exception($@"Error: {response.ReasonPhrase}");
             }
-           
-        }
-
-        public void RemoveFamily(int familyId)
-        {
-            Family rm = AlLFamilies.First(f => f.Id == familyId);
-            AlLFamilies.Remove(rm);
-            Save();
-        }
-
-        public void UpdateFamily(Family family)
-        {
-            Family edit = AlLFamilies.First(f => f.Id == family.Id);
-            edit.Adults = family.Adults;
-            edit.Children = family.Children;
-            edit.Pets = family.Pets;
-            edit.HouseNumber = family.HouseNumber;
-            edit.StreetName = family.StreetName;
-            Save();
+            // Console.WriteLine("update");
         }
     }
 }
