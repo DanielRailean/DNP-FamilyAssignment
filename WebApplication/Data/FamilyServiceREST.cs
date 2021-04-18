@@ -8,12 +8,12 @@ using Models;
 
 namespace Data
 {
-    public class FamilyServiceJSON : IFamilyService
+    public class FamilyServiceREST : IFamilyService
     {
         private IList<Family> AlLFamilies;
         private string familyFile = "families.json";
 
-        public FamilyServiceJSON()
+        public FamilyServiceREST()
         {
             if (File.Exists(familyFile))
             {

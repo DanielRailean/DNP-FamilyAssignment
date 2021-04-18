@@ -13,7 +13,6 @@
         <p>Please <a class="btn-primary" href="/login">Login</a> to view this page</p>
     </NotAuthorized>
     <Authorized>
-        <p style="display: none">Hello @saveUser(@context.User.Identity.Name)</p>
         <h1>
             Your families:
             <button @onclick="@(() => NavigationManager.NavigateTo("addFamily"))">
@@ -171,24 +170,17 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
 <div style="color:red">@errorMessage</div>
 
 @code {
-    private string userName;
     private int userId;
     private string errorMessage;
     private IList<Family> userFamilies;
     private int familyNr = 0;
 
-    private void getData()
+    protected override async Task OnInitializedAsync()
     {
-        userId = UserService.getUserID(userName);
+        userId = UserService.getCurrentUserID();
         userFamilies = FamilyService.GetFamiliesOfUser(userId);
     }
 
-    private string saveUser(string username)
-    {
-        userName = username;
-        getData();
-        return userName;
-    }
 
     private void deleteFamily(int familyId)
     {
@@ -197,6 +189,5 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
         userFamilies.Remove(rm);
         familyNr = 0;
     }
-
 
 }

@@ -31,8 +31,8 @@ namespace WebApplication
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<IUserService, UserServiceJSON>();
-            services.AddSingleton<IFamilyService, FamilyServiceJSON>();
+            services.AddSingleton<IUserService, UserServiceREST>();
+            services.AddSingleton<IFamilyService, FamilyServiceREST>();
             services.AddScoped<AuthenticationStateProvider,CustomAuthenticationStateProvider>();
 
             services.AddAuthorization(options =>

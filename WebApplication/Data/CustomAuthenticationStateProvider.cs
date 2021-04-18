@@ -54,7 +54,7 @@ namespace Data
 
             try
             {
-                User user = userService.ValidateUser(username, password);
+                User user = Task.Run(()=> userService.ValidateUser(username, password)).Result;
                 identity = SetupClaimsForUser(user);
                 string serializedUser = JsonSerializer.Serialize(user);
                 jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "currentUser", serializedUser);

@@ -12,8 +12,6 @@
 
     </NotAuthorized>
     <Authorized Context="Auth">
-        @* <h3>Add New Family @(() =>saveUser(@context.User.Identity.Name))</h3>        *@
-        <p style="display: none">Hello @saveUser(@Auth.User.Identity.Name)</p>
         <EditForm Model="@newFamily" OnValidSubmit="@AddNewFamily" Context="Family">
             <DataAnnotationsValidator></DataAnnotationsValidator>
             <ValidationSummary></ValidationSummary>
@@ -32,27 +30,16 @@
 
 <div style="color:red">@errorMessage</div>
 @code {
-    private string userName;
-    private int userID;
+    private int userId;
     private string errorMessage;
     private Family newFamily = new Family();
-
-    private void getData()
-    {
-        
-    }
-    private string saveUser(string username)
-    {
-        userName = username;
-        userID = UserService.getUserID(userName);
-            getData();
-        return userName;
-    }
+    
 
     private void AddNewFamily()
     {
+        userId = UserService.getCurrentUserID();
         errorMessage = "";
-        newFamily.UserId = userID;
+        newFamily.UserId = userId;
         try
         {
             FamilyService.AddFamily(newFamily);

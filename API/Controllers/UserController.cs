@@ -8,9 +8,10 @@ using Models;
 
 namespace Controllers
 {
+    
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase 
+    public class UserController : ControllerBase ,IUserController
     {
         private IUserService userService;
 
@@ -19,12 +20,12 @@ namespace Controllers
             this.userService = userService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<User>> validateUser([FromBody] string username, [FromBody] string password)
+        [HttpPost]
+        public async Task<ActionResult<User>> RegisterUser([FromBody] User user)
         {
             try
             {
-                User user = userService.ValidateUser(username, password);
+                userService.RegisterUser(user);
                 return Ok(user);
             }
             catch (Exception e)
@@ -33,5 +34,30 @@ namespace Controllers
                 return StatusCode(500, e.Message);
             }
         }
+        [HttpGet]
+        public async Task<ActionResult<User>> ValidateUser([FromQuery]string username, [FromQuery]string password)
+        {
+            try
+            {
+                User valid = userService.ValidateUser(username, password);
+                return Ok(valid);
+            }catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return StatusCode(500, e.Message);
+            }
+        }
+        [HttpPut]
+        public async Task<ActionResult<User>> UpdateUser(User user)
+        {
+            throw new NotImplementedException();
+        }
+        [HttpDelete]
+        public async Task<ActionResult<User>> RemoveUser(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        
     }
 }

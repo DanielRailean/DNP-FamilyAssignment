@@ -10,4 +10,5 @@ namespace Models
         [Required, MaxLength(32)]
         public string  Password { get; set; }
     }
+    
 }

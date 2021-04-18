@@ -19,8 +19,6 @@
         </p>
         <p>Filter by eye color : <input type="text" @oninput="@((arg) => FilterByEye(arg))" style="width:40px">
         </p>
-        
-        <p style="display: none">Hello @saveUser(@context.User.Identity.Name)</p>
         <h3>Adults:</h3>
         @if (finalFilter != null && finalFilter.Count > 0)
         {
@@ -57,7 +55,6 @@
 <div style="color:red">@errorMessage</div>
 
 @code {
-    private string userName;
     private int userId;
     private string errorMessage;
     private IList<Family> userFamilies;
@@ -76,22 +73,9 @@
 
     private void getData()
     {
-        userId = UserService.getUserID(userName);
+        userId = UserService.getCurrentUserID();
         userFamilies = FamilyService.GetFamiliesOfUser(userId);
         LoadAdults();
-    }
-
-    private string saveUser(string username)
-    {
-        if (!done)
-        {
-            userName = username;
-            getData();
-            done = true;
-        }
-
-
-        return userName;
     }
 
     private void LoadAdults()

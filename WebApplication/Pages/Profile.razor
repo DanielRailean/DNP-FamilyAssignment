@@ -14,7 +14,7 @@
         <p>Please <a class="btn-primary" href="/login">Login</a> to view this page</p>
     </NotAuthorized>
     <Authorized>
-        <p>Hello @saveUser(@context.User.Identity.Name)</p>
+        <p>Hello @context.User.Identity.Name</p>
         <button class="btn-primary" @onclick="@Logout"> Logout</button>
     </Authorized>
 </AuthorizeView>
@@ -23,7 +23,6 @@
 
 @code {
     private string errorMessage;
-    private string userName;
     User u = null;
 
     private async Task Logout()
@@ -39,11 +38,6 @@
             errorMessage = e.Message;
         }
     }
-
-    private string saveUser(string username)
-    {
-        userName = username;
-        return userName;
-    }
+    
 
 }

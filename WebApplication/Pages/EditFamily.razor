@@ -12,7 +12,6 @@
         <p>Please <a class="btn-primary" href="/login">Login</a> to view this page</p>
     </NotAuthorized>
     <Authorized>
-        <p style="display: none">Hello @saveUser(@context.User.Identity.Name)</p>
         <h1>
             EditFamily
         </h1>
@@ -214,8 +213,7 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
     public string familyId { get; set; }
 
     public int famId;
-    private string userName;
-    private int userID;
+    private int userId;
     private string errorMessage;
     private Family edited = new Family();
 
@@ -226,27 +224,22 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
         toAddAdult = new Adult();
         toAddAdult.JobTitle = new Job();
     }
-    private void getData()
+
+    protected override async Task OnInitializedAsync()
     {
+
         try
         {
             famId = int.Parse(familyId);
-            edited = FamilyService.GetFamiliesOfUser(userID).First(f => f.Id == famId);
+            userId = UserService.getCurrentUserID();
+            edited = FamilyService.GetFamiliesOfUser(userId).First(f => f.Id == famId);
         }
         catch (Exception)
         {
             errorMessage = "You are not allowed to do that";
         }
     }
-
-    private string saveUser(string username)
-    {
-        userName = username;
-        userID = UserService.getUserID(userName);
-        getData();
-        return userName;
-    }
-
+    
     private void AddAdult()
     {
         errorMessage = "";
