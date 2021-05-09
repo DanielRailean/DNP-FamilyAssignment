@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Models;
 
 namespace Data
@@ -47,7 +48,7 @@ namespace Data
             File.WriteAllText(UsersFile, usersInJson);
         }
 
-        public User ValidateUser(string username, string password)
+        public async Task<User> ValidateUser(string username, string password)
         {
             var user = AllUsers.First(u => u.UserName.Equals(username));
             if (user == null) throw new Exception("User do not exist");
@@ -91,12 +92,6 @@ namespace Data
             User ToRemove = AllUsers.First(u => u.UserId == userId);
             AllUsers.Remove(ToRemove);
             Save();
-        }
-
-        public int getUserID(string username)
-        {
-            User tmp = AllUsers.First(u => u.UserName.Equals(username));
-            return tmp.UserId;
         }
     }
 }

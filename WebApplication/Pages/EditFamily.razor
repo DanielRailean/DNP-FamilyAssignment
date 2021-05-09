@@ -246,7 +246,6 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
         try
         {
             edited.Adults.Add(toAddAdult);
-            FamilyService.UpdateFamily(edited);
             newAdult();
 
         }
@@ -261,8 +260,8 @@ border-radius: 25px; border:  2px solid black; margin: 10px 0;">
         errorMessage = "";
         try
         {
-            FamilyService.UpdateFamily(edited);
-            NavigationManager.NavigateTo("/families");
+            Task.Run(()=> FamilyService.UpdateFamily(edited));
+            NavigationManager.NavigateTo("/families", true);
         }
         catch (Exception e)
         {

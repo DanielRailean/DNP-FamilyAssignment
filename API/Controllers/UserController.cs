@@ -39,7 +39,7 @@ namespace Controllers
         {
             try
             {
-                User valid = userService.ValidateUser(username, password);
+                User valid = await userService.ValidateUser(username, password);
                 return Ok(valid);
             }catch (Exception e)
             {

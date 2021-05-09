@@ -74,6 +74,7 @@ namespace Data
         public async Task UpdateFamily(Family family)
         {
             string familyAsJson = JsonSerializer.Serialize(family);
+            Console.WriteLine(familyAsJson);
             HttpContent content = new StringContent(
                 familyAsJson,
                 Encoding.UTF8,

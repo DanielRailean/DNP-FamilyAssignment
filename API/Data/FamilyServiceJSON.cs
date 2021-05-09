@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Models;
 
 namespace Data
@@ -32,7 +33,7 @@ namespace Data
             File.WriteAllText(familyFile,familyDone);   
         }
 
-        public IList<Family> GetFamiliesOfUser(int userId)
+        public async Task<IList<Family>> GetFamiliesOfUser(int userId)
         {
             List<Family> tmp = new List<Family>();
             foreach (var f in AlLFamilies)
@@ -42,7 +43,7 @@ namespace Data
             return tmp;
         }
 
-        public IList<Family> GetAllFamilies()
+        public async Task<IList<Family>> GetAllFamilies()
         {
             List<Family> tmp = new List<Family>(AlLFamilies);
             return tmp;

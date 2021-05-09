@@ -22,7 +22,7 @@ namespace Controllers
         {
             try
             {
-                IList<Family> families = familyService.GetFamiliesOfUser(userId);
+                IList<Family> families = await familyService.GetFamiliesOfUser(userId);
                 return Ok(families);
             }
             catch (Exception e)
